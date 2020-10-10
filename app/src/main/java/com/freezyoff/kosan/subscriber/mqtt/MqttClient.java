@@ -6,6 +6,7 @@ import com.freezyoff.kosan.subscriber.utils.Constants;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -63,60 +64,66 @@ public class MqttClient {
     public void disconnect(){
         try {
             //unsubscribe all topics
-            for(MqttMessageResolver resolver: getMessageResolverManager().getMessageResolvers()){
+            for (MqttMessageResolver resolver : getMessageResolverManager().getMessageResolvers()) {
                 resolver.onDisconnecting(this);
             }
-            getClient().disconnect();
+
+            //=============================================
+            //@TODO: FIX leaked org.eclipse.paho.android.service.AlarmPingSender$AlarmReceiver
             getClient().unregisterResources();
+            getClient().close();
+            getClient().disconnect(getContext(), new MqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    getClient().unregisterResources();
+                    getClient().close();
+                    getClient().setCallback(null);
+                    mqttAndroidClient = null;
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    getClient().unregisterResources();
+                    getClient().close();
+                    getClient().setCallback(null);
+                    mqttAndroidClient = null;
+                }
+            });
+            //=============================================
+
         } catch (MqttException e) {
             e.printStackTrace();
         }
     }
 
-    public void connect(MqttMessageResolverManager manager, MqttActionListener authActionListener, MqttCallback callback){
+    public void connect(String email, String password, MqttMessageResolverManager manager, MqttActionListener authActionListener, MqttCallback callback) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, UnrecoverableKeyException, IOException, KeyManagementException, MqttException {
         setMessageResolverManager(manager);
-        SSLContext sslContext = null;
 
-        try{
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
 
-            KeyStore caKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            caKeyStore.load(null, null);
-            CertificateFactory caCF = CertificateFactory.getInstance("X.509");
-            X509Certificate ca = (X509Certificate) caCF.generateCertificate(getCaCert());
-            String alias = ca.getSubjectX500Principal().getName();
-            caKeyStore.setCertificateEntry(alias, ca);
-            sslContext = SSLContext.getInstance("TLSv1.2");
+        KeyStore caKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        caKeyStore.load(null, null);
+        CertificateFactory caCF = CertificateFactory.getInstance("X.509");
+        X509Certificate ca = (X509Certificate) caCF.generateCertificate(getCaCert());
+        String alias = ca.getSubjectX500Principal().getName();
+        caKeyStore.setCertificateEntry(alias, ca);
 
-            kmf.init(caKeyStore, null);
-            sslContext.init(kmf.getKeyManagers(), null, null);
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 
-            MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
-            mqttConnectOptions.setAutomaticReconnect(true);
-            mqttConnectOptions.setCleanSession(false);
-            mqttConnectOptions.setUserName(manager.getTargetUser().getValue().getEmail().toLowerCase());
-            mqttConnectOptions.setPassword(manager.getTargetUser().getValue().getPassword().toCharArray());
-            mqttConnectOptions.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
-            mqttConnectOptions.setSocketFactory(sslContext.getSocketFactory());
+        kmf.init(caKeyStore, null);
+        sslContext.init(kmf.getKeyManagers(), null, null);
 
-            getClient().setCallback(callback);
-            getClient().connect(mqttConnectOptions, null, authActionListener);
+        MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+        mqttConnectOptions.setAutomaticReconnect(true);
+        mqttConnectOptions.setCleanSession(false);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+        mqttConnectOptions.setUserName(email.toLowerCase());
+        mqttConnectOptions.setPassword(password.toCharArray());
+        mqttConnectOptions.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
+        mqttConnectOptions.setSocketFactory(sslContext.getSocketFactory());
+
+        getClient().setCallback(callback);
+        getClient().connect(mqttConnectOptions, null, authActionListener);
     }
 
     public void subscribe(String topic, int qos, MqttActionListener callback){

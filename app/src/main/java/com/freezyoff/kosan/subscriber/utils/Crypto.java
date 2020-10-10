@@ -2,8 +2,11 @@ package com.freezyoff.kosan.subscriber.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Crypto {
+
+    private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
     public static String md5(final String s) {
         final String MD5 = "MD5";
@@ -11,7 +14,7 @@ public class Crypto {
             // Create MD5 Hash
             MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
             digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
+            byte[] messageDigest = digest.digest();
 
             // Create Hex String
             StringBuilder hexString = new StringBuilder();
@@ -28,6 +31,10 @@ public class Crypto {
         }
 
         return "";
+    }
+
+    public static int generateIntID() {
+        return atomicInteger.incrementAndGet();
     }
 
 }

@@ -1,19 +1,28 @@
 <resources>
-    <string name="app_name">Kosan Subscriber</string>
+    <string name="app_name">Kosan</string>
+    <string name="app_name_ext_1">KOS</string>
+    <string name="app_name_ext_2">A</string>
+    <string name="app_name_ext_3">N</string>
 
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_in">Masuk</string>
 
+    <string name="alert_login_invalid_input_title">Kesalahan Input!</string>
+    <string name="alert_login_invalid_input_email">Pastikan format email benar.</string>
+    <string name="alert_login_invalid_input_password">Pastikan sandi lebih dari 5 karakter.</string>
+    <string name="alert_login_failed_title">Gagal Login!</string>
+    <string name="alert_login_failed_message">Kombinasi Email dan Password tidak dikenali</string>
+    <string name="alert_login_positive_btn">Tutup</string>
 
     <string name="welcome">"Welcome !"</string>
     <!-- <string name="invalid_username">Not a valid username</string> -->
     <!-- <string name="invalid_password">Password must be >5 characters</string> -->
 
-    <string name="alert_login_failed_title">Gagal Login!</string>
-    <string name="alert_login_failed_message">Kombinasi Email dan Password tidak dikenali</string>
-    <string name="alert_login_failed_positive_btn">Tutup</string>
+
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
 
 </resources>

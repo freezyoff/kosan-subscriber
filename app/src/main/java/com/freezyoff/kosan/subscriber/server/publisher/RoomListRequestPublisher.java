@@ -1,24 +1,24 @@
 package com.freezyoff.kosan.subscriber.server.publisher;
 
-import com.freezyoff.kosan.subscriber.server.ServerManager;
+import com.freezyoff.kosan.subscriber.server.ServerService;
 import com.freezyoff.kosan.subscriber.server.resolver.UserSubscribedRoomResolver;
 import com.freezyoff.kosan.subscriber.utils.Constants;
 
 public class RoomListRequestPublisher implements Runnable {
 
-    final ServerManager serverManager;
+    private final ServerService serverService;
 
-    public RoomListRequestPublisher(ServerManager manager){
-        this.serverManager = manager;
+    public RoomListRequestPublisher(ServerService service) {
+        this.serverService = service;
     }
 
     @Override
     public void run() {
         UserSubscribedRoomResolver resolver = (UserSubscribedRoomResolver)
-                serverManager.getMessagaResolver(UserSubscribedRoomResolver.class);
+                serverService.getMessagaResolver(UserSubscribedRoomResolver.class);
 
-        resolver.publish(serverManager.getClient(), null);
+        resolver.publish(serverService.getMqttClient(), null);
 
-        serverManager.getHandler().postDelayed(this, Constants.MQTT.DELAY_OUTBOUND_ROOMS);
+        serverService.executeServiceAction(this, Constants.MQTT.DELAY_OUTBOUND_ROOMS);
     }
 }

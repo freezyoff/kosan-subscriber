@@ -1,6 +1,5 @@
 package com.freezyoff.kosan.subscriber.model;
 
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,12 +62,23 @@ public class Location implements Parcelable {
         return phone;
     }
 
-    public List<Room> getRooms() { return rooms; }
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public Room getRoomById(int ind) {
+        for (Room room : getRooms()) {
+            if (room.getId() == ind) {
+                return room;
+            }
+        }
+        return null;
+    }
 
     public static ArrayList<Location> fromJSON(JSONArray json) throws JSONException {
         ArrayList<Location> locations = new ArrayList();
-        for(int i = 0; i < json.length(); i++){
-            locations.add( fromJSON( json.getJSONObject(i) ) );
+        for (int i = 0; i < json.length(); i++) {
+            locations.add(fromJSON(json.getJSONObject(i)));
         }
         return locations;
     }

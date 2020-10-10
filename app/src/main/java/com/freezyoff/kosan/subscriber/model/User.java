@@ -3,6 +3,7 @@ package com.freezyoff.kosan.subscriber.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Parcelable
@@ -19,7 +20,9 @@ public class User implements Parcelable
 
     protected User(Parcel in) {
         this(in.readString(), in.readString());
-        subscribedLocations = in.readArrayList(Location.class.getClassLoader());
+
+        subscribedLocations = new ArrayList();
+        in.readTypedList(subscribedLocations, Location.CREATOR);
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {

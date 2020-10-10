@@ -1,47 +1,55 @@
 package com.freezyoff.kosan.subscriber.server.resolver;
 
-import android.os.Message;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.freezyoff.kosan.subscriber.model.Location;
 import com.freezyoff.kosan.subscriber.mqtt.MqttActionListener;
 import com.freezyoff.kosan.subscriber.mqtt.MqttClient;
 import com.freezyoff.kosan.subscriber.mqtt.MqttMessage;
 import com.freezyoff.kosan.subscriber.mqtt.MqttMessageResolver;
-import com.freezyoff.kosan.subscriber.server.ServerManager;
+import com.freezyoff.kosan.subscriber.server.ServerService;
 import com.freezyoff.kosan.subscriber.utils.Constants;
 import com.freezyoff.kosan.subscriber.utils.Crypto;
 
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.json.JSONException;
+
 import java.util.List;
 
 public class UserSubscribedRoomResolver extends MqttMessageResolver {
-    private final String LOG_TAG = "UserSubscribedRoomResolver";
+    private final String LOG_TAG = "UserSub...RoomResolver";
 
-    protected final ServerManager serverManager;
+    private final ServerService serverService;
 
-    public UserSubscribedRoomResolver(ServerManager manager) {
-        this.serverManager = manager;
+    public UserSubscribedRoomResolver(ServerService service) {
+        this.serverService = service;
     }
 
-    private ServerManager getServerManager(){ return this.serverManager; }
+    private ServerService getServerService() {
+        return this.serverService;
+    }
 
-    private final String getInboundTopic(){
+    private final String getInboundTopic() {
+        //avoid null pointer exception
+        String email = "";
+        if (getServerService().getAuthenticatedUser() != null) {
+            email = getServerService().getAuthenticatedUser().getEmail().toLowerCase();
+        }
+
         //@topic:  "kosan/user/<email-md5>/list/locations"
-        return generateTopic(
-                Constants.MQTT.TOPIC_INBOUND_ROOMS,
-                "<email-md5>",
-                Crypto.md5(getServerManager().getTargetUser().getValue().getEmail().toLowerCase())
-        );
+        return generateTopic(Constants.MQTT.TOPIC_INBOUND_ROOMS, "<email-md5>", Crypto.md5(email));
     }
 
-    private final String getOutboundTopic(){
+    private final String getOutboundTopic() {
+        //avoid null pointer exception
+        String email = "";
+        if (getServerService().getAuthenticatedUser() != null) {
+            email = getServerService().getAuthenticatedUser().getEmail().toLowerCase();
+        }
+
         //@topic: "kosan/user/<email-md5>/list/locations"
-        return generateTopic(
-                Constants.MQTT.TOPIC_OUTBOUND_ROOMS,
-                "<email-md5>",
-                Crypto.md5(getServerManager().getTargetUser().getValue().getEmail().toLowerCase())
-        );
+        return generateTopic(Constants.MQTT.TOPIC_OUTBOUND_ROOMS, "<email-md5>", Crypto.md5(email));
     }
 
     /**
@@ -56,10 +64,10 @@ public class UserSubscribedRoomResolver extends MqttMessageResolver {
             public void onSuccess(IMqttToken asyncActionToken) {
                 super.onSuccess(asyncActionToken);
 
-                Message message = serverManager.getHandler().obtainMessage();
-                message.getData().putString(ServerManager.HANDLER_KEY_ACTION, ServerManager.HANDLER_ACTION_MQTT_SUBSCRIBE_SUCCESS);
-                message.getData().putString(ServerManager.HANDLER_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
-                message.sendToTarget();
+                Bundle bundle = new Bundle();
+                bundle.putString(ServerService.HANDLER_KEY_ACTION, ServerService.HANDLER_ACTION_MQTT_SUBSCRIBE_SUCCESS);
+                bundle.putString(ServerService.HANDLER_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
+                getServerService().executeServiceAction(bundle);
 
             }
         });
@@ -78,14 +86,15 @@ public class UserSubscribedRoomResolver extends MqttMessageResolver {
 
         try {
 
-            List<Location> locations = Location.fromJSON( mqttMessage.getPayload() );
-            getServerManager().getTargetUser().getValue().setSubscribedRooms(locations);
+            List<Location> locations = Location.fromJSON(mqttMessage.getPayload());
+            Log.d(LOG_TAG, "Location count: " + locations.size());
+            getServerService().getAuthenticatedUser().setSubscribedRooms(locations);
 
             //send message to handler
-            Message handlerMessage = serverManager.getHandler().obtainMessage();
-            handlerMessage.getData().putString(ServerManager.HANDLER_KEY_ACTION, ServerManager.HANDLER_ACTION_MQTT_MESSAGE_ARRIVED);
-            handlerMessage.getData().putString(ServerManager.HANDLER_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
-            handlerMessage.sendToTarget();
+            Bundle bundle = new Bundle();
+            bundle.putString(ServerService.HANDLER_KEY_ACTION, ServerService.HANDLER_ACTION_MQTT_MESSAGE_ARRIVED);
+            bundle.putString(ServerService.HANDLER_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
+            getServerService().executeServiceAction(bundle);
 
         } catch (JSONException e) {
             e.printStackTrace();

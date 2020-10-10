@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="activity_authenticate_connecting_title">Menghubungi Server!</string>
+
+    <string name="activity_authenticate_connection_failed_title">Login Gagal!</string>
+    <string name="activity_authenticate_connection_failed_message">Kombinasi email dan password tidak terdaftar.</string>
+
+    <string name="activity_authenticate_connection_timeout_title">Gagal Menghubungi Server!</string>
+    <string name="activity_authenticate_connection_timeout_message">Tidak dapat menghubungi Server, pastikan jaringan terhubung ke internet.</string>
+
+    <string name="activity_authenticate_no_room_subscription_title">Hak Akses Expired!</string>
+    <string name="activity_authenticate_no_room_subscription_message">Hak Akses telah expired, segera hubungi admin Kosan.</string>
+
+</resources>

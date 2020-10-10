@@ -33,14 +33,15 @@ public interface Constants {
 
         /**
          * MQTT Server outbound (Request) delay for user room list
+         *
          * @see #TOPIC_OUTBOUND_ROOMS
          * @see #TOPIC_INBOUND_ROOMS
          */
-        int DELAY_OUTBOUND_ROOMS = 1000*5*60;
+        int DELAY_OUTBOUND_ROOMS = 1000 * 5 * 60;
     }
 
-    //@FIXME: test only
-    public static final String[] MQTT_CREDENTIALS = {"akhmad.musa.hadi@gmail.com", "1234567890"};
-    public static final String MQTT_CLIENT_ID = MQTT_CREDENTIALS[0];
+    //@FIXME: door_lock only
+    String[] MQTT_CREDENTIALS = {"akhmad.musa.hadi@gmail.com", "1234567890"};
+    String MQTT_CLIENT_ID = MQTT_CREDENTIALS[0];
 
 }
