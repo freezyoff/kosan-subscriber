@@ -65,9 +65,9 @@ public class UserSubscribedRoomResolver extends MqttMessageResolver {
                 super.onSuccess(asyncActionToken);
 
                 Bundle bundle = new Bundle();
-                bundle.putString(ServerService.HANDLER_KEY_ACTION, ServerService.HANDLER_ACTION_MQTT_SUBSCRIBE_SUCCESS);
-                bundle.putString(ServerService.HANDLER_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
-                getServerService().executeServiceAction(bundle);
+                bundle.putString(ServerService.NOTIFICATION_KEY_ACTION, ServerService.NOTIFICATION_ACTION_MQTT_SUBSCRIBE_SUCCESS);
+                bundle.putString(ServerService.NOTIFICATION_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
+                getServerService().notifyServiceHandler(bundle);
 
             }
         });
@@ -92,9 +92,9 @@ public class UserSubscribedRoomResolver extends MqttMessageResolver {
 
             //send message to handler
             Bundle bundle = new Bundle();
-            bundle.putString(ServerService.HANDLER_KEY_ACTION, ServerService.HANDLER_ACTION_MQTT_MESSAGE_ARRIVED);
-            bundle.putString(ServerService.HANDLER_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
-            getServerService().executeServiceAction(bundle);
+            bundle.putString(ServerService.NOTIFICATION_KEY_ACTION, ServerService.NOTIFICATION_ACTION_MQTT_MESSAGE_ARRIVED);
+            bundle.putString(ServerService.NOTIFICATION_KEY_SENDER_CLASS, UserSubscribedRoomResolver.class.getName());
+            getServerService().notifyServiceHandler(bundle);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -16,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:background="@drawable/w_edit_text_error"
         android:orientation="vertical">
 
         <TextView
@@ -24,8 +23,6 @@
             android:layout_height="wrap_content"
             android:text="@string/activity_authenticate_connection_failed_title"
             android:textAlignment="center"
-            android:textColor="@color/bt_door_outer_ring_open_background"
-            android:textSize="@dimen/app_name_xl"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

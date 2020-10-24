@@ -3,7 +3,6 @@ package com.freezyoff.kosan.subscriber.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -25,10 +24,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //SavedUserCredentials.clear(this);
+
         setContentView(R.layout.activity_login);
 
         if (hasSavedUser()) {
-            redirectDashboardActivity(getSavedUser());
+            authenticate(getSavedUser());
         }
     }
 
@@ -53,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
                 final EditText txEmail = findViewById(R.id.txEmail);
                 final EditText txPassword = findViewById(R.id.txPassword);
                 if (validateInput(txEmail, txPassword)) {
-                    redirectDashboardActivity(
+                    authenticate(
                             new ConnectCredentials(
                                     txEmail.getText().toString(),
                                     txPassword.getText().toString()
@@ -94,8 +95,7 @@ public class LoginActivity extends AppCompatActivity {
                 }).show();
     }
 
-    private void redirectDashboardActivity(ConnectCredentials clientCredentials) {
-        Log.d(LOG_TAG, LoginActivity.class.getName() + "#redirectDashboardActivity");
+    private void authenticate(ConnectCredentials clientCredentials) {
         Intent intent = new Intent(this, AuthenticateActivity.class);
         intent.putExtra(ConnectCredentials.class.getName(), clientCredentials);
         startActivity(intent);

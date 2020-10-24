@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_dashboard_background"
+    android:orientation="vertical"
+    android:tag="h600-mdpi">
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_dashboard_header_bottom_margin"
+        android:background="@drawable/bg_header"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/activity_dashboard_header_padding"
+        android:theme="@style/AppTheme.Brand.Dark">
+
+        <include
+            layout="@layout/fragment_brand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_dashboard_field_margin_horizontal"
+        android:layout_marginTop="@dimen/activity_dashboard_field_margin_vertical"
+        android:layout_marginEnd="@dimen/activity_dashboard_field_margin_horizontal"
+        android:layout_marginBottom="@dimen/activity_dashboard_header_bottom_margin"
+        android:gravity="center_horizontal">
+
+        <include layout="@layout/activity_dashboard_fragment_datetime" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/pnLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/activity_dashboard_field_margin_horizontal"
+        android:layout_marginTop="@dimen/activity_dashboard_field_margin_vertical"
+        android:layout_marginEnd="@dimen/activity_dashboard_field_margin_horizontal"
+        android:background="@drawable/bg_clickable"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/activity_dashboard_field_padding"
+        android:paddingTop="@dimen/activity_dashboard_field_padding"
+        android:paddingBottom="@dimen/activity_dashboard_field_padding_bottom">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#fff"
+            android:labelFor="@id/spinLocation"
+            android:maxWidth="20dp"
+            android:maxHeight="20dp"
+            android:src="@drawable/ic_kosan_icon_lokasi" />
+
+        <Spinner
+            android:id="@+id/spinLocation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:spinnerMode="dialog" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pnRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/activity_dashboard_field_margin_horizontal"
+        android:layout_marginTop="@dimen/activity_dashboard_field_margin_vertical"
+        android:layout_marginEnd="@dimen/activity_dashboard_field_margin_horizontal"
+        android:background="@drawable/bg_clickable"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/activity_dashboard_field_padding"
+        android:paddingTop="@dimen/activity_dashboard_field_padding"
+        android:paddingBottom="@dimen/activity_dashboard_field_padding_bottom">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center_vertical"
+            android:background="#fff"
+            android:labelFor="@id/spinRoom"
+            android:maxWidth="20dp"
+            android:maxHeight="20dp"
+            android:src="@drawable/ic_kosan_icon_rumah" />
+
+        <Spinner
+            android:id="@+id/spinRoom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:spinnerMode="dialog" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragLease"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_dashboard_field_margin_horizontal"
+        android:layout_marginTop="@dimen/activity_dashboard_field_margin_vertical"
+        android:layout_marginEnd="@dimen/activity_dashboard_field_margin_horizontal"
+        android:layout_marginBottom="@dimen/activity_dashboard_field_margin_vertical">
+
+        <include layout="@layout/activity_dashboard_fragment_subcription_info" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_dashboard_field_margin_horizontal"
+        android:layout_weight="1"
+        android:background="@drawable/bg_footer">
+
+        <FrameLayout
+            android:id="@+id/fragLockIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/fragCommandButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".15">
+
+            <include layout="@layout/activity_dashboard_fragment_indicator" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fragDoorIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/fragCommandButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".15">
+
+            <include layout="@layout/activity_dashboard_fragment_indicator" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fragCommandButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".6">
+
+            <include layout="@layout/activity_dashboard_fragment_command_button" />
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

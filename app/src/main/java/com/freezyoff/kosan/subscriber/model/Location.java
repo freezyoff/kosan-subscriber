@@ -66,11 +66,18 @@ public class Location implements Parcelable {
         return rooms;
     }
 
-    public Room getRoomById(int ind) {
+    public Room getRoomById(int roomId) {
         for (Room room : getRooms()) {
-            if (room.getId() == ind) {
+            if (room.getId() == roomId) {
                 return room;
             }
+        }
+        return null;
+    }
+
+    public Room getRoom(int ind) {
+        if (ind >= 0 && ind < getRooms().size()) {
+            return getRooms().get(ind);
         }
         return null;
     }

@@ -9,11 +9,10 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.freezyoff.kosan.subscriber.R;
-import com.freezyoff.kosan.subscriber.model.Location;
+import com.freezyoff.kosan.subscriber.model.Room;
 import com.freezyoff.kosan.subscriber.model.User;
 import com.freezyoff.kosan.subscriber.mqtt.MqttActionListener;
 import com.freezyoff.kosan.subscriber.mqtt.MqttCallback;
@@ -21,8 +20,9 @@ import com.freezyoff.kosan.subscriber.mqtt.MqttClient;
 import com.freezyoff.kosan.subscriber.mqtt.MqttMessage;
 import com.freezyoff.kosan.subscriber.mqtt.MqttMessageResolver;
 import com.freezyoff.kosan.subscriber.mqtt.MqttMessageResolverManager;
-import com.freezyoff.kosan.subscriber.server.publisher.RoomListRequestPublisher;
-import com.freezyoff.kosan.subscriber.server.resolver.DoorLockStateResolver;
+import com.freezyoff.kosan.subscriber.server.publisher.UserSubcribedRoomPublisher;
+import com.freezyoff.kosan.subscriber.server.resolver.DoorLockCommandResolver;
+import com.freezyoff.kosan.subscriber.server.resolver.SubscribedRoomDoorStateResolver;
 import com.freezyoff.kosan.subscriber.server.resolver.UserSubscribedRoomResolver;
 import com.freezyoff.kosan.subscriber.utils.Constants;
 import com.freezyoff.kosan.subscriber.utils.SavedUserCredentials;
@@ -38,10 +38,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class ServerService extends Service implements android.os.Handler.Callback, MqttMessageResolverManager {
+public class ServerService extends Service implements MqttMessageResolverManager {
+    public static final String ACTION_TIME_TICKED = "com.freezyoff.kosan.subscriber.MqttClient.ACTION_TIME_TICKED";
+    public static final String EXTRA_TIME = "com.freezyoff.kosan.subscriber.MqttClient.EXTRA_TIME";
+
     public static final String ACTION_AUTHENTICATION_SUCCESS = "com.freezyoff.kosan.subscriber.MqttClient.ACTION_AUTHENTICATION_SUCCESS";
     public static final String ACTION_AUTHENTICATION_FAILED = "com.freezyoff.kosan.subscriber.MqttClient.ACTION_AUTHENTICATION_FAILED";
     public static final String ACTION_CONNECTION_TIMEOUT = "com.freezyoff.kosan.subscriber.MqttClient.ACTION_CONNECTION_TIMEOUT";
@@ -50,20 +54,27 @@ public class ServerService extends Service implements android.os.Handler.Callbac
     public static final String ACTION_USER_ROOM_SUBSCRIPTION_NOT_FOUND = "com.freezyoff.kosan.subscriber.MqttClient.ACTION_USER_ROOM_SUBSCRIPTION_NOT_FOUND";
     public static final String ACTION_USER_SUBSCRIBED_ROOM_DOOR_AND_LOCK_STATE_CHANGED = "com.freezyoff.kosan.subscriber.MqttClient.ACTION_USER_SUBSCRIBED_ROOM_DOOR_AND_LOCK_STATE_CHANGED";
     /**
+     * Boolean extra flag for current mqtt failed cause
+     */
+    public static final String EXTRA_FAILED_CAUSE = "com.freezyoff.kosan.subscriber.MqttClient.EXTRA_FAILED_CAUSE";
+
+    /**
      * Boolean extra flag for current mqtt state is connected
      */
     public static final String EXTRA_CONNECTED = "com.freezyoff.kosan.subscriber.MqttClient.EXTRA_CONNECTED";
+
     /**
      * Boolean extra flag for current mqtt connected via reconnection.
      */
     public static final String EXTRA_RECONNECTED = "com.freezyoff.kosan.subscriber.MqttClient.EXTRA_RECONNECTED";
-    public static final String EXTRA_FAILED_CAUSE = "com.freezyoff.kosan.subscriber.MqttClient.EXTRA_FAILED_CAUSE";
-    public static final String HANDLER_KEY_ACTION = "com.freezyoff.kosan.subscriber.ServerService.HANDLER_KEY_ACTION";
-    public static final String HANDLER_KEY_SENDER_CLASS = "com.freezyoff.kosan.subscriber.ServerService.HANDLER_KEY_SENDER_CLASS";
-    public static final String HANDLER_ACTION_MQTT_SUBSCRIBE_SUCCESS = "com.freezyoff.kosan.subscriber.ServerService.HANDLER_ACTION_MQTT_SUBSCRIBE_SUCCESS";
-    public static final String HANDLER_ACTION_MQTT_MESSAGE_ARRIVED = "com.freezyoff.kosan.subscriber.ServerService.HANDLER_ACTION_MQTT_MESSAGE_ARRIVED";
+    public static final String NOTIFICATION_KEY_ACTION = "com.freezyoff.kosan.subscriber.ServerService.NOTIFICATION_KEY_ACTION";
+    public static final String NOTIFICATION_KEY_SENDER_CLASS = "com.freezyoff.kosan.subscriber.ServerService.NOTIFICATION_KEY_SENDER_CLASS";
+    public static final String NOTIFICATION_KEY_TARGET_ROOM = "com.freezyoff.kosan.subscriber.ServerService.NOTIFICATION_KEY_TARGET_ROOM";
+    public static final String NOTIFICATION_ACTION_MQTT_SUBSCRIBE_SUCCESS = "com.freezyoff.kosan.subscriber.ServerService.NOTIFICATION_ACTION_MQTT_SUBSCRIBE_SUCCESS";
+    public static final String NOTIFICATION_ACTION_MQTT_MESSAGE_ARRIVED = "com.freezyoff.kosan.subscriber.ServerService.NOTIFICATION_ACTION_MQTT_MESSAGE_ARRIVED";
+    public static final String NOTIFICATION_ACTION_SEND_ROOM_LOCK_OPEN_COMMAND = "com.freezyoff.kosan.subscriber.ServerService.NOTIFICATION_ACTION_SEND_ROOM_LOCK_OPEN_COMMAND";
+    public final static long DEFAULT_CONNECTION_TIMEOUT = 10000;
     private static final String LOG_TAG = "ServerService";
-    public static long DEFAULT_CONNECTION_TIMEOUT = 10000;
     private final IBinder binder = new ServerService.Binder();
     private ConnectCredentials connectCredentials;
     private User authenticatedUser;
@@ -138,6 +149,7 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         setConnected(false);
 
         _createHandler();
+        _createTimeService();
         _createMessageResolver();
         _createMessagePublisher();
     }
@@ -155,14 +167,9 @@ public class ServerService extends Service implements android.os.Handler.Callbac
     }
 
     private void _createHandler() {
-//            if (handlerThread == null){
         handlerThread = new HandlerThread(R.string.app_name + ".HandlerThread");
         handlerThread.start();
-//            }
-
-//            if (handler == null){
-        handler = new android.os.Handler(handlerThread.getLooper(), this);
-//            }
+        handler = new android.os.Handler(handlerThread.getLooper(), new ServerServiceHandlerCallback(this));
     }
 
     private void _destroyHandler() {
@@ -170,15 +177,31 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         handlerThread.quitSafely();
     }
 
+    private void _createTimeService() {
+        executeRunnable(new Runnable() {
+
+            @Override
+            public void run() {
+                Intent intent = new Intent();
+                intent.setAction(ACTION_TIME_TICKED);
+                intent.putExtra(EXTRA_TIME, new Date());
+                sendBroadcast(intent);
+                executeRunnable(this, 1000);
+            }
+
+        });
+    }
+
     private void _createMessageResolver() {
         messageResolver = new HashMap();
         messageResolver.put(UserSubscribedRoomResolver.class, new UserSubscribedRoomResolver(this));
-        messageResolver.put(DoorLockStateResolver.class, new DoorLockStateResolver(this));
+        messageResolver.put(SubscribedRoomDoorStateResolver.class, new SubscribedRoomDoorStateResolver(this));
+        messageResolver.put(DoorLockCommandResolver.class, new DoorLockCommandResolver(this));
     }
 
     private void _createMessagePublisher() {
         messagePublisher = new HashMap();
-        messagePublisher.put(RoomListRequestPublisher.class, new RoomListRequestPublisher(this));
+        messagePublisher.put(UserSubcribedRoomPublisher.class, new UserSubcribedRoomPublisher(this));
     }
 
     private void _destroyMqttClient() {
@@ -245,7 +268,14 @@ public class ServerService extends Service implements android.os.Handler.Callbac
             _createMqttClient();
 
             //dispatch connection timer
-            getHandler().postDelayed(new ServerAuthenticationTimer(), connectionTimeot);
+            getHandler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isConnected()) {
+                        broadcastConnectionTimeout();
+                    }
+                }
+            }, connectionTimeot);
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -274,7 +304,7 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         return messageResolver.get(cls);
     }
 
-    private Runnable getMessagePublisher(Class<? extends Runnable> cls) {
+    protected Runnable getMessagePublisher(Class<? extends Runnable> cls) {
         return messagePublisher.get(cls);
     }
 
@@ -282,148 +312,89 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         return this.handler;
     }
 
-    public void executeServiceAction(Bundle bundle) {
+    public void notifyServiceHandler(Bundle bundle) {
         Message message = getHandler().obtainMessage();
         message.setData(bundle);
         message.sendToTarget();
     }
 
-    public void executeServiceAction(Message message) {
+    public void notifyServiceHandler(Message message) {
         getHandler().sendMessage(message);
     }
 
-    public void executeServiceAction(Runnable runnable) {
+    public void executeRunnable(Runnable runnable) {
         getHandler().post(runnable);
     }
 
-    public void executeServiceAction(Runnable runnable, long delayMillis) {
+    public void executeRunnable(Runnable runnable, long delayMillis) {
         getHandler().postDelayed(runnable, delayMillis);
     }
 
-    @Override
-    public boolean handleMessage(@NonNull Message msg) {
-        String sender = msg.getData().getString(HANDLER_KEY_SENDER_CLASS);
-        String action = msg.getData().getString(HANDLER_KEY_ACTION);
-
-        if (sender.equals(UserSubscribedRoomResolver.class.getName())) {
-
-            if (action.equals(HANDLER_ACTION_MQTT_SUBSCRIBE_SUCCESS)) {
-                handler.post(getMessagePublisher(RoomListRequestPublisher.class));
-                return true;
-            } else if (action.equals(HANDLER_ACTION_MQTT_MESSAGE_ARRIVED)) {
-
-                //we should check room count per location first
-                List<Location> locations = getAuthenticatedUser().getSubscribedRooms();
-                int locationCount = locations == null ? 0 : locations.size();
-                int roomCount = 0;
-                if (locationCount > 0) {
-                    for (Location location : locations) {
-                        roomCount += location.getRooms() == null ? 0 : location.getRooms().size();
-                    }
-                }
-
-                //user have subscription to rooms
-                if (locationCount > 0 && roomCount > 0) {
-                    ServerService.Broadcaster.userSubscriptionFound(getContext());
-                    DoorLockStateResolver resolver = (DoorLockStateResolver) getMessagaResolver(DoorLockStateResolver.class);
-                    resolver.subscribe(getMqttClient(), null);
-                    return true;
-                }
-
-                //user not subscribed to any rooms
-                else {
-                    ServerService.Broadcaster.userSubscriptionNotFound(getContext());
-                    return true;
-                }
-
-            }
-
-        }
-
-        if (sender.equals(DoorLockStateResolver.class.getName())) {
-
-            if (action.equals(HANDLER_ACTION_MQTT_MESSAGE_ARRIVED)) {
-                ServerService.Broadcaster.broadcastUserSubcribedRoomDoorLockStateChanged(getContext());
-                return true;
-            }
-
-        }
-
-        return false;
+    public void removeRunnable(Runnable runnable) {
+        getHandler().removeCallbacks(runnable);
     }
 
-    static class Broadcaster {
+    protected void broadcastConnectionTimeout() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_CONNECTION_TIMEOUT);
+        sendBroadcast(intent);
+    }
 
-        static void broadcastConnectionTimeout(Context context) {
-            Intent intent = new Intent();
-            intent.setAction(ACTION_CONNECTION_TIMEOUT);
-            context.sendBroadcast(intent);
-        }
+    protected void broadcastConnectionState(boolean state, boolean reconnect) {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_CONNECTION_STATE_CHANGED);
+        intent.putExtra(EXTRA_CONNECTED, state);
+        intent.putExtra(EXTRA_RECONNECTED, reconnect);
+        sendBroadcast(intent);
+    }
 
-        static void broadcastConnectionState(Context context, boolean state, boolean reconnect) {
-            Intent intent = new Intent();
-            intent.setAction(ACTION_CONNECTION_STATE_CHANGED);
-            intent.putExtra(EXTRA_CONNECTED, state);
-            intent.putExtra(EXTRA_RECONNECTED, reconnect);
-            context.sendBroadcast(intent);
-        }
+    /**
+     * user cannot connect to server due to wrong connetion credentials (Authentication Failed)
+     *
+     * @param context
+     */
+    protected void broadcastAuthenticationFailed(Context context, String cause) {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_AUTHENTICATION_FAILED);
+        intent.putExtra(EXTRA_FAILED_CAUSE, cause);
+        context.sendBroadcast(intent);
+    }
 
-        /**
-         * user cannot connect to server due to wrong connetion credentials (Authentication Failed)
-         *
-         * @param context
-         */
-        static void broadcastAuthenticationFailed(Context context, String cause) {
-            Intent intent = new Intent();
-            intent.setAction(ACTION_AUTHENTICATION_FAILED);
-            intent.putExtra(EXTRA_FAILED_CAUSE, cause);
-            context.sendBroadcast(intent);
-        }
+    /**
+     * user connected to server (Authentication success)
+     */
+    protected void broadcastAuthenticationSuccess() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_AUTHENTICATION_SUCCESS);
+        sendBroadcast(intent);
+    }
 
-        /**
-         * user connected to server (Authentication success)
-         *
-         * @param context
-         */
-        static void broadcastAuthenticationSuccess(Context context) {
-            Intent intent = new Intent();
-            intent.setAction(ACTION_AUTHENTICATION_SUCCESS);
-            context.sendBroadcast(intent);
-        }
+    /**
+     * user authentication success (connected successfully) and has room subscription
+     */
+    protected void broadcastUserSubscriptionFound() {
+        Intent intent = new Intent();
+        intent.setAction(ServerService.ACTION_USER_ROOM_SUBSCRIPTION_FOUND);
+        sendBroadcast(intent);
+    }
 
-        /**
-         * user authentication success (connected successfully) and has room subscription
-         *
-         * @param context
-         */
-        static void userSubscriptionFound(Context context) {
-            Intent intent = new Intent();
-            intent.setAction(ServerService.ACTION_USER_ROOM_SUBSCRIPTION_FOUND);
-            context.sendBroadcast(intent);
-        }
+    /**
+     * user authentication success (connected successfully) but has no room subscription
+     */
+    public void broadcastUserSubscriptionNotFound() {
+        Intent intent = new Intent();
+        intent.setAction(ServerService.ACTION_USER_ROOM_SUBSCRIPTION_NOT_FOUND);
+        sendBroadcast(intent);
+    }
 
-        /**
-         * user authentication success (connected successfully) but has no room subscription
-         *
-         * @param context
-         */
-        public static void userSubscriptionNotFound(Context context) {
-            Intent intent = new Intent();
-            intent.setAction(ServerService.ACTION_USER_ROOM_SUBSCRIPTION_NOT_FOUND);
-            context.sendBroadcast(intent);
-        }
 
-        /**
-         * notify user subcribed room signal change
-         *
-         * @param context
-         */
-        public static void broadcastUserSubcribedRoomDoorLockStateChanged(Context context) {
-            Intent intent = new Intent();
-            intent.setAction(ServerService.ACTION_USER_SUBSCRIBED_ROOM_DOOR_AND_LOCK_STATE_CHANGED);
-            context.sendBroadcast(intent);
-        }
-
+    /**
+     * user subcribed room signal change
+     */
+    public void broadcastUserSubcribedRoomDoorLockStateChanged() {
+        Intent intent = new Intent();
+        intent.setAction(ServerService.ACTION_USER_SUBSCRIBED_ROOM_DOOR_AND_LOCK_STATE_CHANGED);
+        sendBroadcast(intent);
     }
 
     public class Binder extends android.os.Binder {
@@ -432,17 +403,24 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         }
     }
 
+    public void sendLockOpenCommand(Room room) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ServerService.NOTIFICATION_KEY_ACTION, ServerService.NOTIFICATION_ACTION_SEND_ROOM_LOCK_OPEN_COMMAND);
+        bundle.putParcelable(ServerService.NOTIFICATION_KEY_TARGET_ROOM, room);
+        notifyServiceHandler(bundle);
+    }
+
     class ServerAuthenticationCallback extends MqttActionListener {
         @Override
         public void onSuccess(IMqttToken asyncActionToken) {
             SavedUserCredentials.save(getContext(), getConnectCredentials().getEmail(), getConnectCredentials().getPassword());
             setAuthenticatedUser(new User(connectCredentials.getEmail(), connectCredentials.getPassword()));
-            ServerService.Broadcaster.broadcastAuthenticationSuccess(getContext());
+            broadcastAuthenticationSuccess();
         }
 
         @Override
         public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-            ServerService.Broadcaster.broadcastAuthenticationFailed(getContext(), exception.getMessage());
+            broadcastAuthenticationFailed(getContext(), exception.getMessage());
             _destroyMqttClient();
         }
     }
@@ -452,7 +430,7 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         public void connectComplete(boolean reconnect, String serverURI) {
             Log.d(LOG_TAG, "connected");
             setConnected(true);
-            ServerService.Broadcaster.broadcastConnectionState(getContext(), isConnected(), reconnect);
+            broadcastConnectionState(isConnected(), reconnect);
             for (MqttMessageResolver resolver : getMessageResolvers()) {
                 resolver.onConnected(getMqttClient());
             }
@@ -462,7 +440,7 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         public void connectionLost(Throwable cause) {
             Log.d(LOG_TAG, "disconnected");
             setConnected(false);
-            ServerService.Broadcaster.broadcastConnectionState(getContext(), isConnected, false);
+            broadcastConnectionState(isConnected, false);
             for (MqttMessageResolver resolver : getMessageResolvers()) {
                 resolver.onReconnecting(getMqttClient(), cause);
             }
@@ -485,7 +463,6 @@ public class ServerService extends Service implements android.os.Handler.Callbac
 
         @Override
         public void messageArrived(String topic, org.eclipse.paho.client.mqttv3.MqttMessage message) {
-
             for (MqttMessageResolver resolver : getMessageResolvers()) {
                 if (resolver.isMatchTopic(topic)) {
                     resolver.onMessageArrived(
@@ -497,14 +474,4 @@ public class ServerService extends Service implements android.os.Handler.Callbac
         }
     }
 
-    class ServerAuthenticationTimer implements Runnable {
-
-        @Override
-        public void run() {
-            if (!isConnected()) {
-                ServerService.Broadcaster.broadcastConnectionTimeout(ServerService.this);
-            }
-        }
-
-    }
 }

@@ -49,17 +49,27 @@ public class User implements Parcelable
         this.subscribedLocations = locations;
     }
 
-    public List<Location> getSubscribedRooms(){
+    public List<Location> getSubscribedRooms() {
         return subscribedLocations;
     }
 
-    public Location getSubscribedRoom(int index){
+    public Location getSubscribedRoom(int index) {
         return getSubscribedRooms().get(index);
     }
 
-    public Location getSubscribedRoom(String name){
-        for (Location location: getSubscribedRooms()){
-            if (location.getName().equals(name)){
+    public Location getSubscribedRoomById(int id) {
+        for (Location location : getSubscribedRooms()) {
+            if (location.getId() == id) {
+                return location;
+            }
+        }
+
+        return null;
+    }
+
+    public Location getSubscribedRoom(String name) {
+        for (Location location : getSubscribedRooms()) {
+            if (location.getName().equals(name)) {
                 return location;
             }
         }

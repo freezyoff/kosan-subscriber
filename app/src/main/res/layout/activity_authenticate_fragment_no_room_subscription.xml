@@ -16,16 +16,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:background="@drawable/w_edit_text_error"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/activity_authenticate_no_room_subscription_title"
-            android:textAlignment="center"
-            android:textColor="@color/bt_door_outer_ring_open_background"
-            android:textSize="@dimen/app_name_xl" />
+            android:textAlignment="center" />
 
         <TextView
             android:layout_width="match_parent"

@@ -120,10 +120,10 @@ public class AuthenticateActivity extends AppCompatActivity {
     }
 
     private void redirectToDashboard() {
-        Intent redirectIntent = new Intent(AuthenticateActivity.this, DashboardActivity.class);
-        redirectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-        startActivity(redirectIntent);
         finish();
+        Intent redirectIntent = new Intent(AuthenticateActivity.this, DashboardActivity.class);
+        redirectIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(redirectIntent);
     }
 
     class BroadcastListener extends BroadcastReceiver {

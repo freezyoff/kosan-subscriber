@@ -11,17 +11,22 @@ import android.os.IBinder;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.freezyoff.kosan.subscriber.R;
-import com.freezyoff.kosan.subscriber.model.Location;
 import com.freezyoff.kosan.subscriber.server.ServerService;
 import com.freezyoff.kosan.subscriber.ui.dashboard.LocationListAdapter;
-import com.freezyoff.kosan.subscriber.ui.dashboard.RoomStatePagerAdapter;
+import com.freezyoff.kosan.subscriber.ui.dashboard.RoomIndicatorDoorStateFragment;
+import com.freezyoff.kosan.subscriber.ui.dashboard.RoomIndicatorLockStateFragment;
+import com.freezyoff.kosan.subscriber.ui.dashboard.RoomIndicatorSubcriptionInfoFragment;
+import com.freezyoff.kosan.subscriber.ui.dashboard.RoomIndicatorUnlockButtonFragment;
+import com.freezyoff.kosan.subscriber.ui.dashboard.RoomListAdapter;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -41,52 +46,60 @@ public class DashboardActivity extends AppCompatActivity {
         }
     };
 
-    private List<BroadcastReceiver> broadcastReceiverList;
     private LocationListAdapter locationListAdapter;
     private Spinner locationSpinner;
-    private ViewPager roomStateViewPager;
-    private RoomStatePagerAdapter roomStateViewPagerAdapter;
 
-    private UserSubscribedRoomDoorLockStateBroadcastReceiver userSubscribedRoomDoorLockStateBroadcastReceiver;
+    boolean backPressedExitApp = false;
+    private RoomListAdapter roomListAdapter;
+    private Spinner roomSpinner;
+    private TextView txDate;
+    private TextView txHour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         _prepareServiceBinding();
         _prepareBroadcastReceiver();
-
         _prepareView();
     }
 
+    private TimeBroadcastReciever timeBroadcastReciever;
+
     @Override
     protected void onDestroy() {
-        _destroyBroadcasReceiver();
         _destroyServiceBinding();
+        _destroyBroadcastReceiver();
         super.onDestroy();
     }
 
     private void _prepareServiceBinding() {
         Intent intent = new Intent(this, ServerService.class);
         bindService(intent, serverServiceConnection, Context.BIND_AUTO_CREATE);
+
     }
 
     private void _destroyServiceBinding() {
+        locationListAdapter.unbindService();
+        roomListAdapter.unbindService();
         unbindService(serverServiceConnection);
     }
 
     private void _prepareBroadcastReceiver() {
-        userSubscribedRoomDoorLockStateBroadcastReceiver = new UserSubscribedRoomDoorLockStateBroadcastReceiver();
-        userSubscribedRoomDoorLockStateBroadcastReceiver.register();
+        timeBroadcastReciever = new TimeBroadcastReciever();
+        timeBroadcastReciever.register();
     }
 
-    private void _destroyBroadcasReceiver() {
-        userSubscribedRoomDoorLockStateBroadcastReceiver.unregister();
+    private void _destroyBroadcastReceiver() {
+        timeBroadcastReciever.unregister();
     }
 
     private void _prepareView() {
         //set views
         setContentView(R.layout.activity_dashboard);
+
+        //Date & Hour Service
+        txDate = findViewById(R.id.txDateView);
+        txHour = findViewById(R.id.txHourView);
 
         //location spinner
         locationSpinner = findViewById(R.id.spinLocation);
@@ -95,7 +108,7 @@ public class DashboardActivity extends AppCompatActivity {
         locationSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Location location = (Location) locationSpinner.getAdapter().getItem(position);
+                roomListAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -104,41 +117,91 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
-        //view pager
-        roomStateViewPager = findViewById(R.id.vPager);
-        roomStateViewPagerAdapter = new RoomStatePagerAdapter(this, roomStateViewPager, locationSpinner);
-        roomStateViewPager.setAdapter(roomStateViewPagerAdapter);
+        roomSpinner = findViewById(R.id.spinRoom);
+        roomListAdapter = new RoomListAdapter(this, locationSpinner, roomSpinner);
+        roomSpinner.setAdapter(roomListAdapter);
+        roomSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                _prepareFragments();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                _prepareFragments();
+            }
+        });
 
     }
 
-    public ServerService getServerService() {
-        return this.serverService;
+    private void _prepareFragments() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        _createLockIndicatorFragment(transaction, locationSpinner.getSelectedItemPosition(), roomSpinner.getSelectedItemPosition());
+        _createSubcriptionIndicatorFragment(transaction, locationSpinner.getSelectedItemPosition(), roomSpinner.getSelectedItemPosition());
+        _createDoorIndicatorFragment(transaction, locationSpinner.getSelectedItemPosition(), roomSpinner.getSelectedItemPosition());
+        _createCommandButtonFragment(transaction, locationSpinner.getSelectedItemPosition(), roomSpinner.getSelectedItemPosition());
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
-    class UserSubscribedRoomDoorLockStateBroadcastReceiver extends BroadcastReceiver {
+    private void _createLockIndicatorFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
+        RoomIndicatorLockStateFragment fragment = new RoomIndicatorLockStateFragment(serverService, selectedLocationIndex, selectedRoomIndex);
+        transaction.replace(R.id.fragLockIndicator, fragment);
+    }
 
-        public void register() {
-            IntentFilter filters = new IntentFilter();
-            filters.addAction(ServerService.ACTION_USER_SUBSCRIBED_ROOM_DOOR_AND_LOCK_STATE_CHANGED);
-            registerReceiver(this, filters);
+    private void _createSubcriptionIndicatorFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
+        RoomIndicatorSubcriptionInfoFragment fragment = new RoomIndicatorSubcriptionInfoFragment(serverService, selectedLocationIndex, selectedRoomIndex);
+        transaction.replace(R.id.fragLease, fragment);
+    }
+
+    private void _createDoorIndicatorFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
+        RoomIndicatorDoorStateFragment fragment = new RoomIndicatorDoorStateFragment(serverService, selectedLocationIndex, selectedRoomIndex);
+        transaction.replace(R.id.fragDoorIndicator, fragment);
+    }
+
+    private void _createCommandButtonFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
+        RoomIndicatorUnlockButtonFragment fragment = new RoomIndicatorUnlockButtonFragment(serverService, selectedLocationIndex, selectedRoomIndex);
+        transaction.replace(R.id.fragCommandButton, fragment);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backPressedExitApp) {
+            super.onBackPressed();
+            return;
         }
 
-        public void unregister() {
+        backPressedExitApp = true;
+        serverService.executeRunnable(new Runnable() {
+            @Override
+            public void run() {
+                backPressedExitApp = false;
+            }
+        }, 1000 * 3);
+    }
+
+    class TimeBroadcastReciever extends BroadcastReceiver {
+
+        private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        private final SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+
+        void register() {
+            IntentFilter filter = new IntentFilter(ServerService.ACTION_TIME_TICKED);
+            registerReceiver(new TimeBroadcastReciever(), filter);
+        }
+
+        void unregister() {
             unregisterReceiver(this);
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() == ServerService.ACTION_USER_SUBSCRIBED_ROOM_DOOR_AND_LOCK_STATE_CHANGED) {
-
-                roomStateViewPagerAdapter.notifyRoomStateChange();
-
+            if (intent.getAction().equals(ServerService.ACTION_TIME_TICKED)) {
+                Date cDate = (Date) intent.getSerializableExtra(ServerService.EXTRA_TIME);
+                txDate.setText(dateFormat.format(cDate));
+                txHour.setText(hourFormat.format(cDate));
             }
         }
-
-        public View getCurrentDoorStateView() {
-            return roomStateViewPager.getChildAt(roomStateViewPager.getCurrentItem());
-        }
-
     }
+
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="@dimen/indicator_background_width_default"
+        android:height="@dimen/indicator_background_height_default"
+        android:drawable="@drawable/indicator_background_secondary"
+        android:gravity="center"></item>
+    <item
+        android:width="@dimen/indicator_icon_lock_width"
+        android:height="@dimen/indicator_icon_lock_height"
+        android:bottom="@dimen/indicator_icon_offset_default"
+        android:drawable="@drawable/indicator_icon_lock_locked"
+        android:gravity="center"></item>
+</layer-list>

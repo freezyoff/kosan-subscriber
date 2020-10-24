@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activity_dashboard_fragment_date_tx_date"
+            android:textColor="@color/activity_dashboard_fragment_datetime_text_color" />
+
+        <TextView
+            android:id="@+id/txDateView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="@string/str_date"
+            android:textColor="@color/activity_dashboard_fragment_datetime_text_color" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activity_dashboard_fragment_date_tx_date"
+            android:textColor="@color/activity_dashboard_fragment_datetime_text_color" />
+
+        <TextView
+            android:id="@+id/txHourView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="@string/str_date"
+            android:textColor="@color/activity_dashboard_fragment_datetime_text_color" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size">12dp</dimen>
+
+    <!-- start: fragment_brand -->
+    <dimen name="fragment_brand_text_size">28sp</dimen>
+    <!-- end: fragment_brand -->
+
+    <!-- start: fragment_indicator -->
+    <dimen name="indicator_background_width_default">48dp</dimen>
+    <dimen name="indicator_background_height_default">48dp</dimen>
+    <dimen name="indicator_icon_width_default">24dp</dimen>
+    <dimen name="indicator_icon_height_default">24dp</dimen>
+    <dimen name="indicator_icon_lock_width">18dp</dimen>
+    <dimen name="indicator_icon_lock_height">24dp</dimen>;
+    <dimen name="indicator_icon_offset_default">2dp</dimen>
+    <dimen name="indicator_icon_text_vertical_margin_default">2dp</dimen>
+    <!-- end: fragment_indicator -->
+
+    <!-- start: activity_login -->
+    <dimen name="activity_login_field_margin">32dp</dimen>
+    <!-- end: activity_login -->
+
+    <!-- start: activity_dashboard -->
+    <dimen name="activity_dashboard_header_padding">12dp</dimen>
+    <dimen name="activity_dashboard_header_bottom_margin">8dp</dimen>
+
+    <dimen name="activity_dashboard_field_padding">10dp</dimen>
+    <dimen name="activity_dashboard_field_padding_bottom">12dp</dimen>
+
+    <dimen name="activity_dashboard_field_margin_horizontal">16dp</dimen>
+    <dimen name="activity_dashboard_field_margin_vertical">8dp</dimen>
+
+    <dimen name="activity_dashboard_fragment_command_button_background_top_offset">0dp</dimen>
+    <dimen name="activity_dashboard_button_command_width">105dp</dimen>
+    <dimen name="activity_dashboard_button_command_height">105dp</dimen>
+    <!-- end: activity_login -->
+</resources>

@@ -4,25 +4,30 @@
     <string name="app_name_ext_2">A</string>
     <string name="app_name_ext_3">N</string>
 
-    <string name="title_activity_login">Sign in</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Masuk</string>
+    <string name="str_date">00/00/0000</string>
+    <string name="str_time">00:00:00</string>
+
 
     <string name="alert_login_invalid_input_title">Kesalahan Input!</string>
     <string name="alert_login_invalid_input_email">Pastikan format email benar.</string>
     <string name="alert_login_invalid_input_password">Pastikan sandi lebih dari 5 karakter.</string>
-    <string name="alert_login_failed_title">Gagal Login!</string>
-    <string name="alert_login_failed_message">Kombinasi Email dan Password tidak dikenali</string>
     <string name="alert_login_positive_btn">Tutup</string>
 
-    <string name="welcome">"Welcome !"</string>
-    <!-- <string name="invalid_username">Not a valid username</string> -->
-    <!-- <string name="invalid_password">Password must be >5 characters</string> -->
+    <string name="activity_login_title">Sign in</string>
+    <string name="activity_login_bt_login">Masuk</string>
+    <string name="activity_login_tx_password_hint">Sandi</string>
+    <string name="activity_login_tx_email_hint">Email</string>
 
 
-    <string name="title_activity_dashboard">DashboardActivity</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
+    <string name="activity_authenticate_connecting_title">Menghubungi Server!</string>
+    <string name="activity_authenticate_connection_failed_title">Login Gagal!</string>
+    <string name="activity_authenticate_connection_failed_message">Kombinasi email dan password tidak terdaftar.</string>
+    <string name="activity_authenticate_no_room_subscription_title">Hak Akses Expired!</string>
+    <string name="activity_authenticate_no_room_subscription_message">Hak Akses telah expired, segera hubungi admin Kosan.</string>
 
+    <string name="activity_dashboard_fragment_date_tx_date">Tanggal: </string>
+
+    <string name="activity_dashboard_fragment_subscription_title_primary">Periode Sewa:</string>
+    <string name="activity_dashboard_fragment_subscription_hour_default">@string/str_time</string>
+    <string name="activity_dashboard_fragment_subscription_date_default">@string/str_date</string>
 </resources>

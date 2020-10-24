@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="activity_login_bt_login">Masuk</string>
-    <string name="activity_login_tx_password_hint">Sandi</string>
-    <string name="activity_login_tx_email_hint">Email</string>
-</resources>

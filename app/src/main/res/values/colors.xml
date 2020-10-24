@@ -1,31 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#ABBDC5</color>
-    <color name="colorPrimaryDark">#2E3B40</color>
-    <color name="colorAccent">#4FC3F7</color>
+    <color name="brand_color_light">#FFF</color>
+    <color name="brand_accent">#2196F3</color>
 
-    <color name="text_hint">#ABBDC5</color>
-
-    <color name="brand_text_color_accent">#FB8C00</color>
-    <color name="brand_text_color_primary">#4FC3F7</color>
-
-    <!-- edit text -->
-    <color name="edit_text_rounded_corner_enable_border">#ABBDC5</color>
-    <color name="edit_text_rounded_corner_focused_border">#4FC3F7</color>
-    <!-- end: edit text -->
-
-    <!-- start: button door colors -->
-    <color name="bt_door_outer_ring_locked_stroke">#60222222</color>
-    <color name="bt_door_outer_ring_locked_background">#00FD23</color>
-    <color name="bt_door_inner_ring_locked_stroke">#8000FD23</color>
-    <color name="bt_door_inner_ring_locked_background">#222222</color>
-
-    <color name="bt_door_outer_ring_open_stroke">#60222222</color>
-    <color name="bt_door_outer_ring_open_background">#FD0000</color>
-    <color name="bt_door_inner_ring_open_stroke">#80FD0000</color>
-    <color name="bt_door_inner_ring_open_background">#222222</color>
-
-    <!-- end: button door colors -->
-
-
+    <!-- start: activity_dashboard  -->
+    <color name="activity_dashboard_background">#66000000</color>
+    <color name="activity_dashboard_fragment_subcription_progressbar_secondary">#BF1313</color>
+    <color name="activity_dashboard_fragment_indicator_text_color">#fff</color>
+    <color name="activity_dashboard_fragment_datetime_text_color">#fff</color>
+    <!-- start: activity_dashboard  -->
 </resources>
