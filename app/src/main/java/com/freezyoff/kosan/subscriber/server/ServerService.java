@@ -211,7 +211,7 @@ public class ServerService extends Service implements MqttMessageResolverManager
         mqttClient = null;
     }
 
-    private void _createMqttClient() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, MqttException, IOException {
+    private void _createMqttClient(ConnectCredentials connectCredentials) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, MqttException, IOException {
         mqttClient = new MqttClient(
                 this,
                 Constants.MQTT.SERVER_URI,
@@ -226,6 +226,8 @@ public class ServerService extends Service implements MqttMessageResolverManager
                 new ServerAuthenticationCallback(),
                 new ServerMessageCallback()
         );
+
+        this.connectCredentials = connectCredentials;
     }
 
     public boolean isConnected() {
@@ -263,9 +265,7 @@ public class ServerService extends Service implements MqttMessageResolverManager
     private void connect(ConnectCredentials connectCredentials, long connectionTimeot) {
         try {
 
-            setConnectCredentials(connectCredentials);
-
-            _createMqttClient();
+            _createMqttClient(connectCredentials);
 
             //dispatch connection timer
             getHandler().postDelayed(new Runnable() {

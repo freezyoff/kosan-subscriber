@@ -35,7 +35,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/activity_dashboard_fragment_date_tx_date"
+            android:text="@string/activity_dashboard_fragment_date_tx_hour"
             android:textColor="@color/activity_dashboard_fragment_datetime_text_color" />
 
         <TextView

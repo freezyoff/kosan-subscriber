@@ -6,8 +6,35 @@
         <item name="android:textSize">@dimen/text_size</item>
     </style>
 
-    <style name="AppTheme.Brand.Dark" parent="AppTheme">
+    <style name="AppTheme.Dashboard.Brand" parent="AppTheme">
         <item name="android:textColor">@color/brand_color_light</item>
     </style>
+
+
+    <!-- start: activity_login -->
+    <style name="AppTheme.Login" parent="AppTheme">
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="editTextStyle">@style/AppTheme.Login.EditText</item>
+        <item name="buttonStyle">@style/AppTheme.Login.Button</item>
+    </style>
+
+    <style name="AppTheme.Login.Brand">
+        <item name="android:textSize">@dimen/activity_login_brand_text_size</item>
+    </style>
+
+    <style name="AppTheme.Login.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">#000</item>
+        <item name="android:textColorHint">#BF000000</item>
+        <item name="android:textSize">@dimen/activity_login_edit_text_size</item>
+        <item name="android:background">@drawable/bg_login_edit_text</item>
+    </style>
+
+    <style name="AppTheme.Login.Button" parent="Widget.AppCompat.Button">
+        <item name="android:textSize">@dimen/activity_login_edit_text_size</item>
+        <item name="android:background">@drawable/bg_btn_login</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/activity_login_btn_text_color</item>
+    </style>
+    <!-- end: activity_login -->
 
 </resources>

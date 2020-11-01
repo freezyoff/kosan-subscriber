@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false">
+    android:layout_marginStart="@dimen/activity_login_horizontal_margin"
+    android:layout_marginEnd="@dimen/activity_login_horizontal_margin"
+    android:theme="@style/AppTheme.Login">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,49 +17,51 @@
 
         <include
             android:id="@+id/vBrand"
-            layout="@layout/fragment_brand"
+            layout="@layout/fragment_brand_with_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/txEmail"
+        <fragment
+            android:id="@+id/fragLoginForm"
+            android:name="com.freezyoff.kosan.subscriber.ui.login.LoginFormFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/fragment_login_fields_margin_vertical"
+            app:layout_constraintTop_toBottomOf="@id/vBrand" />
+
+        <fragment
+            android:id="@+id/fragLoginAuthentication"
+            android:name="com.freezyoff.kosan.subscriber.ui.login.LoginAuthenticationFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/fragment_login_fields_margin_vertical"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintTop_toBottomOf="@id/vBrand"
+            app:layout_constraintVertical_bias="0" />
+
+        <fragment
+            android:id="@+id/fragLoginAlert"
+            android:name="com.freezyoff.kosan.subscriber.ui.login.LoginAlertFragment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_login_field_margin"
-            android:autofillHints="@string/activity_login_bt_login"
-            android:hint="@string/activity_login_tx_email_hint"
-            android:inputType="textEmailAddress"
-            android:selectAllOnFocus="true"
+            android:layout_marginTop="@dimen/fragment_login_fields_margin_vertical"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vBrand" />
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintTop_toBottomOf="@id/vBrand"
+            app:layout_constraintVertical_bias="0" />
 
-        <EditText
-            android:id="@+id/txPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_login_field_margin"
-            android:autofillHints=""
-            android:hint="@string/activity_login_tx_password_hint"
-            android:imeActionLabel="@string/activity_login_tx_password_hint"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
-            android:selectAllOnFocus="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txEmail" />
-
-        <Button
-            android:id="@+id/btLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_login_field_margin"
-            android:text="@string/activity_login_bt_login"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txPassword" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

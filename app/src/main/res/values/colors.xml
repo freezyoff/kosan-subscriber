@@ -3,6 +3,24 @@
     <color name="brand_color_light">#FFF</color>
     <color name="brand_accent">#2196F3</color>
 
+    <color name="ic_kosan_launcher_background">#000000</color>
+
+    <!-- start: fragment_login_authenticate -->
+    <color name="fragment_login_loader_progressbar_color">@color/brand_accent</color>
+    <!-- end: fragment_login_authenticate -->
+
+    <!-- start: fragment_login_alert -->
+    <color name="fragment_login_auth_failed_title_color">
+        @color/activity_dashboard_fragment_subcription_progressbar_secondary
+    </color>
+    <!-- end: fragment_login_alert -->
+
+    <!-- start: activity_login -->
+    <color name="activity_login_edit_text_background_color">#26000000</color>
+    <color name="activity_login_btn_background_color">#000</color>
+    <color name="activity_login_btn_text_color">#fff</color>
+    <!-- end: activity_login -->
+
     <!-- start: activity_dashboard  -->
     <color name="activity_dashboard_background">#66000000</color>
     <color name="activity_dashboard_fragment_subcription_progressbar_secondary">#BF1313</color>

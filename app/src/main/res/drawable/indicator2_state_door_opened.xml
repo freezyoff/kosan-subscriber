@@ -3,12 +3,12 @@
     <item
         android:width="@dimen/indicator_background_width_default"
         android:height="@dimen/indicator_background_height_default"
-        android:drawable="@drawable/indicator_background_primary"
+        android:drawable="@drawable/indicator2_background_primary"
         android:gravity="center"></item>
     <item
-        android:width="@dimen/indicator_icon_lock_width"
-        android:height="@dimen/indicator_icon_lock_height"
+        android:width="@dimen/indicator_icon_width_default"
+        android:height="@dimen/indicator_icon_height_default"
         android:bottom="@dimen/indicator_icon_offset_default"
-        android:drawable="@drawable/indicator_icon_lock_unlocked"
+        android:drawable="@drawable/indicator_icon_door_opened"
         android:gravity="center"></item>
 </layer-list>

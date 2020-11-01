@@ -25,13 +25,13 @@ public class RoomIndicatorDoorStateFragment extends RoomIndicatorFragment {
             ImageView imgView = inflatedView.findViewById(R.id.imgIndicator);
             TextView txView = inflatedView.findViewById(R.id.txIndicator);
             if (room.getDoorSignal() == Room.DOOR_OPEN) {
-                imgView.setImageResource(R.drawable.indicator_state_door_opened);
+                imgView.setImageResource(R.drawable.indicator2_state_door_opened);
                 txView.setText("Terbuka");
             } else if (room.getDoorSignal() == Room.DOOR_CLOSED) {
-                imgView.setImageResource(R.drawable.indicator_state_door_closed);
+                imgView.setImageResource(R.drawable.indicator2_state_door_closed);
                 txView.setText("Tertutup");
             } else {
-                imgView.setBackgroundResource(R.drawable.indicator_state_unknown);
+                imgView.setBackgroundResource(R.drawable.indicator2_state_unknown);
                 txView.setText("");
             }
         }

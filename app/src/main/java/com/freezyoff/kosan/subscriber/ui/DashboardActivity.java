@@ -55,15 +55,20 @@ public class DashboardActivity extends AppCompatActivity {
     private TextView txDate;
     private TextView txHour;
 
+    private TimeBroadcastReciever timeBroadcastReciever;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         _prepareServiceBinding();
         _prepareBroadcastReceiver();
         _prepareView();
     }
-
-    private TimeBroadcastReciever timeBroadcastReciever;
 
     @Override
     protected void onDestroy() {
@@ -75,7 +80,6 @@ public class DashboardActivity extends AppCompatActivity {
     private void _prepareServiceBinding() {
         Intent intent = new Intent(this, ServerService.class);
         bindService(intent, serverServiceConnection, Context.BIND_AUTO_CREATE);
-
     }
 
     private void _destroyServiceBinding() {
@@ -140,44 +144,44 @@ public class DashboardActivity extends AppCompatActivity {
         _createSubcriptionIndicatorFragment(transaction, locationSpinner.getSelectedItemPosition(), roomSpinner.getSelectedItemPosition());
         _createDoorIndicatorFragment(transaction, locationSpinner.getSelectedItemPosition(), roomSpinner.getSelectedItemPosition());
         _createCommandButtonFragment(transaction, locationSpinner.getSelectedItemPosition(), roomSpinner.getSelectedItemPosition());
-        transaction.addToBackStack(null);
         transaction.commit();
     }
 
     private void _createLockIndicatorFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
         RoomIndicatorLockStateFragment fragment = new RoomIndicatorLockStateFragment(serverService, selectedLocationIndex, selectedRoomIndex);
-        transaction.replace(R.id.fragLockIndicator, fragment);
+        transaction.replace(R.id.fragLockIndicator, fragment, "com.freezyoff.kosan.subcriber.dashboard.fragments");
     }
 
     private void _createSubcriptionIndicatorFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
         RoomIndicatorSubcriptionInfoFragment fragment = new RoomIndicatorSubcriptionInfoFragment(serverService, selectedLocationIndex, selectedRoomIndex);
-        transaction.replace(R.id.fragLease, fragment);
+        transaction.replace(R.id.fragLease, fragment, "com.freezyoff.kosan.subcriber.dashboard.fragments");
     }
 
     private void _createDoorIndicatorFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
         RoomIndicatorDoorStateFragment fragment = new RoomIndicatorDoorStateFragment(serverService, selectedLocationIndex, selectedRoomIndex);
-        transaction.replace(R.id.fragDoorIndicator, fragment);
+        transaction.replace(R.id.fragDoorIndicator, fragment, "com.freezyoff.kosan.subcriber.dashboard.fragments");
     }
 
     private void _createCommandButtonFragment(FragmentTransaction transaction, int selectedLocationIndex, int selectedRoomIndex) {
         RoomIndicatorUnlockButtonFragment fragment = new RoomIndicatorUnlockButtonFragment(serverService, selectedLocationIndex, selectedRoomIndex);
-        transaction.replace(R.id.fragCommandButton, fragment);
+        transaction.replace(R.id.fragCommandButton, fragment, "com.freezyoff.kosan.subcriber.dashboard.fragments");
     }
 
     @Override
     public void onBackPressed() {
         if (backPressedExitApp) {
-            super.onBackPressed();
+            //@TODO: fix this, unregistered broadcast receiver
+            finish();
             return;
+        } else {
+            backPressedExitApp = true;
+            serverService.executeRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    backPressedExitApp = false;
+                }
+            }, 1000 * 3);
         }
-
-        backPressedExitApp = true;
-        serverService.executeRunnable(new Runnable() {
-            @Override
-            public void run() {
-                backPressedExitApp = false;
-            }
-        }, 1000 * 3);
     }
 
     class TimeBroadcastReciever extends BroadcastReceiver {
@@ -187,7 +191,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         void register() {
             IntentFilter filter = new IntentFilter(ServerService.ACTION_TIME_TICKED);
-            registerReceiver(new TimeBroadcastReciever(), filter);
+            registerReceiver(this, filter);
         }
 
         void unregister() {

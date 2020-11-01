@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,10 +57,10 @@ public class RoomIndicatorUnlockButtonFragment extends Fragment {
 
         inflatedView = inflater.inflate(R.layout.activity_dashboard_fragment_command_button, container, false);
 
-        ImageView imageView = inflatedView.findViewById(R.id.btnLockCommand);
+        ImageButton imageView = inflatedView.findViewById(R.id.btnLockCommand);
         imageView.setClickable(true);
         imageView.setOnClickListener(new OnClickListener());
-
+        imageView.setEnabled(false);
         broadcastReceiver.register();
 
         return inflatedView;
@@ -89,10 +90,12 @@ public class RoomIndicatorUnlockButtonFragment extends Fragment {
                 Room room = getRoom();
                 if (room == null) return;
 
-                ImageView imageView = inflatedView.findViewById(R.id.btnLockCommand);
-                if (room.getDoorSignal() == Room.DOOR_OPEN) {
+                ImageButton imageView = inflatedView.findViewById(R.id.btnLockCommand);
+                if (room.getLockSignal() == Room.LOCK_OPEN) {
+                    Log.d(LOG_TAG, room.getName() + ": Room.LOCK_OPEN: ");
                     imageView.setEnabled(false);
-                } else if (room.getDoorSignal() == Room.DOOR_CLOSED) {
+                } else if (room.getLockSignal() == Room.LOCK_CLOSED) {
+                    Log.d(LOG_TAG, room.getName() + ": Room.LOCK_CLOSED: ");
                     imageView.setEnabled(true);
                 }
 

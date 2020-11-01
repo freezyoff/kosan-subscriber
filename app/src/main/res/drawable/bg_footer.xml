@@ -8,6 +8,15 @@
     <item
         android:bottom="-200dp"
         android:gravity="center"
+        android:left="-170dp"
+        android:right="-170dp">
+        <shape android:shape="oval">
+            <solid android:color="#fff" />
+        </shape>
+    </item>
+    <item
+        android:bottom="-200dp"
+        android:gravity="center"
         android:left="-200dp"
         android:right="-200dp"
         android:top="@dimen/activity_dashboard_fragment_command_button_background_top_offset">

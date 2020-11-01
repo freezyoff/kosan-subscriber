@@ -17,8 +17,25 @@
     <dimen name="indicator_icon_text_vertical_margin_default">0dp</dimen>
     <!-- end: fragment_indicator -->
 
+    <!-- start: fragment_login_authenticate -->
+    <dimen name="fragment_login_loader_progressbar_width">160dp</dimen>
+    <dimen name="fragment_login_loader_progressbar_height">20dp</dimen>
+    <dimen name="fragment_login_loader_title_text_size">14sp</dimen>
+    <!-- end: fragment_login_authenticate -->
+
+    <!-- start: fragment_login_alert -->
+    <dimen name="fragment_login_failed_fields_vertical_margin">8dp</dimen>
+    <dimen name="fragment_login_failed_title_text_size">16sp</dimen>
+    <!-- end: fragment_login_alert -->
+
+    <!-- start: fragment_login_fields -->
+    <dimen name="fragment_login_fields_margin_vertical">16dp</dimen>
+    <!-- end: fragment_login_fields -->
+
     <!-- start: activity_login -->
-    <dimen name="activity_login_field_margin">32dp</dimen>
+    <dimen name="activity_login_horizontal_margin">32dp</dimen>
+    <dimen name="activity_login_brand_text_size">32sp</dimen>
+    <dimen name="activity_login_edit_text_size">14sp</dimen>
     <!-- end: activity_login -->
 
     <!-- start: activity_dashboard -->
@@ -31,7 +48,7 @@
     <dimen name="activity_dashboard_field_margin_horizontal">16dp</dimen>
     <dimen name="activity_dashboard_field_margin_vertical">8dp</dimen>
 
-    <dimen name="activity_dashboard_fragment_command_button_background_top_offset">0dp</dimen>
+    <dimen name="activity_dashboard_fragment_command_button_background_top_offset">8dp</dimen>
     <dimen name="activity_dashboard_button_command_width">90dp</dimen>
     <dimen name="activity_dashboard_button_command_height">90dp</dimen>
     <!-- end: activity_login -->

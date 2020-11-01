@@ -5,12 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/btnLockCommand"
         android:layout_width="@dimen/activity_dashboard_button_command_width"
         android:layout_height="@dimen/activity_dashboard_button_command_height"
-        android:clickable="true"
-        android:src="@drawable/sl_btn_command"
+        android:background="@drawable/sl_btn_command"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

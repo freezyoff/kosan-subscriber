@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" android:enterFadeDuration="300" android:exitFadeDuration="300">
-    <item android:drawable="@drawable/ic_btn_command_icon_pressed" android:state_enabled="true" android:state_pressed="true" />
-    <item android:drawable="@drawable/ic_btn_command_icon_upressed" android:state_enabled="true" android:state_focused="true" />
-    <item android:drawable="@drawable/ic_btn_command_icon_upressed" android:state_enabled="true" />
     <item android:drawable="@drawable/ic_btn_command_icon_disabled" android:state_enabled="false" />
+    <item android:drawable="@drawable/ic_btn_command_icon_disabled" android:state_enabled="false" android:state_focused="true" />
+    <item android:drawable="@drawable/ic_btn_command_icon_pressed" android:state_enabled="true" android:state_pressed="true" />
+    <item android:drawable="@drawable/ic_btn_command_icon_upressed" android:state_enabled="true" />
 </selector>

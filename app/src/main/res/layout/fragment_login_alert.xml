@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login_result_title_login_failed"
+        android:textAlignment="center"
+        android:textColor="@color/fragment_login_auth_failed_title_color"
+        android:textSize="@dimen/fragment_login_failed_title_text_size" />
+
+    <TextView
+        android:id="@+id/txMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fragment_login_failed_fields_vertical_margin"
+        android:text="@string/login_result_message_authentication_failed"
+        android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/btTryAgain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/fragment_login_failed_fields_vertical_margin"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="@string/try_again" />
+</LinearLayout>

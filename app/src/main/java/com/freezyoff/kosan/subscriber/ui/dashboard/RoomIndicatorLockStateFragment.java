@@ -24,14 +24,15 @@ public class RoomIndicatorLockStateFragment extends RoomIndicatorFragment {
 
             ImageView imgView = inflatedView.findViewById(R.id.imgIndicator);
             TextView txView = inflatedView.findViewById(R.id.txIndicator);
+
             if (room.getLockSignal() == Room.LOCK_OPEN) {
-                imgView.setImageResource(R.drawable.indicator_state_lock_unlocked);
-                txView.setText("Terbuka");
+                imgView.setImageResource(R.drawable.indicator2_state_lock_unlocked);
+//                txView.setText("Terbuka");
             } else if (room.getLockSignal() == Room.LOCK_CLOSED) {
-                imgView.setImageResource(R.drawable.indicator_state_lock_locked);
-                txView.setText("Terkunci");
+                imgView.setImageResource(R.drawable.indicator2_state_lock_locked);
+//                txView.setText("Terkunci");
             } else {
-                imgView.setImageResource(R.drawable.indicator_state_unknown);
+                imgView.setImageResource(R.drawable.indicator2_state_unknown);
                 txView.setText("");
             }
         }

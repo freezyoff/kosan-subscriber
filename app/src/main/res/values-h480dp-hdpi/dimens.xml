@@ -18,7 +18,6 @@
     <!-- end: fragment_indicator -->
 
     <!-- start: activity_login -->
-    <dimen name="activity_login_field_margin">32dp</dimen>
     <!-- end: activity_login -->
 
     <!-- start: activity_dashboard -->
@@ -31,7 +30,7 @@
     <dimen name="activity_dashboard_field_margin_horizontal">16dp</dimen>
     <dimen name="activity_dashboard_field_margin_vertical">8dp</dimen>
 
-    <dimen name="activity_dashboard_fragment_command_button_background_top_offset">0dp</dimen>
+    <dimen name="activity_dashboard_fragment_command_button_background_top_offset">8dp</dimen>
     <dimen name="activity_dashboard_button_command_width">105dp</dimen>
     <dimen name="activity_dashboard_button_command_height">105dp</dimen>
     <!-- end: activity_login -->
